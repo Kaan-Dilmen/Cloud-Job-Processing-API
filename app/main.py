@@ -1,11 +1,9 @@
 from fastapi import FastAPI
 from typing import List
-from app.models import Base
-from app.models import Job
-from app.database import engine
-from app.database import SessionLocal
-from app.schemas import JobCreate
-from app.schemas import JobResponse
+from app.models import Base, Job
+from app.database import engine, SessionLocal
+from app.schemas import JobCreate, JobResponse
+
 
 app = FastAPI()
 
