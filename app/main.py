@@ -1,8 +1,11 @@
 from fastapi import FastAPI
+from typing import List
 from app.models import Base
 from app.models import Job
 from app.database import engine
 from app.database import SessionLocal
+from app.schemas import JobCreate
+from app.schemas import JobResponse
 
 app = FastAPI()
 
@@ -17,27 +20,27 @@ def check_run():
 def health_status():
     return {"status": "healthy"}
 
-@app.get("/jobs")
+@app.get("/jobs", response_model=List[JobResponse])
 def return_all_jobs():
     db = SessionLocal()
     all_jobs = db.query(Job).all()
     return all_jobs
 
 
-@app.get("/jobs/{job_id}")
+@app.get("/jobs/{job_id}", response_model=JobResponse)
 def return_jobs_by_id(job_id: int):
     db = SessionLocal()
-    jobs = db.query(Job).filter(Job.id == job_id).first()
-    return jobs
+    job = db.query(Job).filter(Job.id == job_id).first()
+    return job
     
 
 #Post Requests
-@app.post("/jobs")
-def create_job(document_url: str):
+@app.post("/jobs", response_model=JobResponse)
+def create_job(job_data: JobCreate):
     db = SessionLocal()
 
     job = Job(
-        document_url = document_url,
+        document_url = job_data.document_url,
         status = "pending"
     )
 
