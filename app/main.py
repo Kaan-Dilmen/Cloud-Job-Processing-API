@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.models import Base, Job
 from app.database import engine, SessionLocal
-from app.schemas import JobCreate, JobResponse, JobUpdate
+from app.schemas import JobCreate, JobResponse, JobUpdate, JobStatus
 
 
 app = FastAPI()
@@ -46,7 +46,7 @@ def create_job(job_data: JobCreate, db: Session = Depends(get_db)):
     
     job = Job(
         document_url = job_data.document_url,
-        status = "pending"
+        status = JobStatus.pending
     )
 
     db.add(job)
@@ -69,3 +69,16 @@ def update_job(job_id: int, job_data: JobUpdate, db: Session = Depends(get_db)):
     db.refresh(job)
     
     return job
+
+#Delete 
+@app.delete("/jobs/{job_id}")
+def delete_job(job_id: int, db: Session = Depends(get_db)):
+    job = db.query(Job).filter(Job.id == job_id).first()
+    
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found.")
+    
+    db.delete(job)
+    db.commit()
+    
+    return {"message": "Job Deleted Successfully"}

@@ -1,4 +1,11 @@
+from enum import Enum
 from pydantic import BaseModel, ConfigDict
+
+class JobStatus(str, Enum):
+    pending = "pending"
+    processing = "processing"
+    completed = "completed"
+    failed = "failed"
 
 class JobCreate(BaseModel):
     document_url: str
@@ -6,9 +13,9 @@ class JobCreate(BaseModel):
 class JobResponse(BaseModel):
     id: int
     document_url: str
-    status: str
+    status: JobStatus
 
     model_config = ConfigDict(from_attributes=True)
     
 class JobUpdate(BaseModel):
-    status: str    
+    status: JobStatus    
