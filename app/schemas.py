@@ -9,3 +9,6 @@ class JobResponse(BaseModel):
     status: str
 
     model_config = ConfigDict(from_attributes=True)
+    
+class JobUpdate(BaseModel):
+    status: str    

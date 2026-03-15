@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.models import Base, Job
 from app.database import engine, SessionLocal
-from app.schemas import JobCreate, JobResponse
+from app.schemas import JobCreate, JobResponse, JobUpdate
 
 
 app = FastAPI()
@@ -53,4 +53,19 @@ def create_job(job_data: JobCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(job)
 
+    return job
+
+#Patches
+@app.patch("/jobs/{job_id}", response_model=JobResponse)
+def update_job(job_id: int, job_data: JobUpdate, db: Session = Depends(get_db)):
+    job = db.query(Job).filter(Job.id == job_id).first()
+    
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found.")
+    
+    job.status = job_data.status
+    
+    db.commit()
+    db.refresh(job)
+    
     return job
