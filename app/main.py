@@ -27,9 +27,16 @@ def health_status():
     return {"status": "healthy"}
 
 @app.get("/jobs", response_model=List[JobResponse])
-def get_all_jobs(db: Session = Depends(get_db)):
-    all_jobs = db.query(Job).all()
-    return all_jobs
+def get_all_jobs(
+    status: JobStatus | None = None,
+    db: Session = Depends(get_db)
+    ):
+        if status is not None:
+            jobs = db.query(Job).filter(Job.status == status).all()
+            return jobs
+        
+        all_jobs = db.query(Job).all()
+        return all_jobs
 
 
 @app.get("/jobs/{job_id}", response_model=JobResponse)
