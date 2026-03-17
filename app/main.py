@@ -31,12 +31,13 @@ def get_all_jobs(
     status: JobStatus | None = None,
     db: Session = Depends(get_db)
     ):
+        query = db.query(Job)
+    
         if status is not None:
-            jobs = db.query(Job).filter(Job.status == status).all()
-            return jobs
+            query = query.filter(Job.status == status)
         
-        all_jobs = db.query(Job).all()
-        return all_jobs
+        query = query.order_by(Job.created_at.desc())        
+        return query.all()
 
 
 @app.get("/jobs/{job_id}", response_model=JobResponse)
